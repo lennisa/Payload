@@ -1,67 +1,156 @@
-# Payload Blank Template
+# Payload CMS – Form Builder with Supabase (Local Setup)
 
-This template comes configured with the bare minimum to get started on anything you need.
+## 📝 Objective
 
-## Quick start
+This project demonstrates the use of Payload CMS locally with a working form builder system, connected to a Supabase PostgreSQL database. It shows how to:
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+- Create forms using Payload's admin panel
+- Fetch and submit form data using Payload’s built-in API
+- Test the backend integration using Postman
 
-## Quick Start - local setup
+---
 
-To spin up this template locally, follow these steps:
+## ✅ Tech Stack
 
-### Clone
+- Payload CMS (local development)
+- Supabase PostgreSQL (free tier)
+- Postman (API testing)
+- Node.js + TypeScript
+- Form Builder Plugin (`@payloadcms/plugin-form-builder`)
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+---
 
-### Development
+## ⚙️ Setup Steps
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URI` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+### 1. Connected to Supabase PostgreSQL
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+- Signed up at [https://supabase.io](https://supabase.io) using GitHub
+- Created a project and copied the PostgreSQL connection string:
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+- Pasted this into the `.env` file of the Payload project:
 
-#### Docker (Optional)
+```env
+DATABASE_URI=your-supabase-connection-string
+PAYLOAD_SECRET=your-secret-key
+npx create-payload-app
+# Selected the "blank" template
+cd my-payload-app
+npm install
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+npm run dev
 
-To do so, follow these steps:
+Opened Payload Admin at:
+👉 http://localhost:3000/admin
 
-- Modify the `MONGODB_URI` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URI` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+Created an admin user
+npm install @payloadcms/plugin-form-builder
+npm install @payloadcms/plugin-form-builder
 
-## How it works
+Then in payload.config.ts, added:
+import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+plugins: [
+  formBuilderPlugin({})
+]
+4. Created "Contact Us" Form
+Navigated to the Forms section in the Payload Admin
 
-### Collections
+Clicked “Create New Form”
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+Set form title as "Contact Us"
 
-- #### Users (Authentication)
+Added fields:
 
-  Users are auth-enabled collections that have access to the admin panel.
+Full Name (type: text)
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/main/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+Email Address (type: email)
 
-- #### Media
+Message (type: textarea)
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+GET http://localhost:3000/api/forms/[formID]
 
-### Docker
+response
 
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
+```
+{
+    "id": 1,
+    "title": "Contact Us",
+    "fields": [
+        {
+            "id": "68345a180f9d3ba0ab9b7077",
+            "name": "fullname",
+            "label": "Full Name",
+            "width": 100,
+            "defaultValue": null,
+            "required": true,
+            "blockName": null,
+            "blockType": "text"
+        },
+        {
+            "id": "68345a920f9d3ba0ab9b7079",
+            "name": "email",
+            "label": "Email Address",
+            "width": 100,
+            "required": true,
+            "blockName": null,
+            "blockType": "email"
+        },
+        {
+            "id": "68345ad00f9d3ba0ab9b707b",
+            "message": {
+                "root": {
+                    "type": "root",
+                    "format": "",
+                    "indent": 0,
+                    "version": 1,
+                    "children": [
+                        {
+                            "type": "paragraph",
+                            "format": "",
+                            "indent": 0,
+                            "version": 1,
+                            "children": [],
+                            "direction": null,
+                            "textStyle": "",
+                            "textFormat": 0
+                        },
+                        {
+                            "type": "paragraph",
+                            "format": "",
+                            "indent": 0,
+                            "version": 1,
+                            "children": [
+                                {
+                                    "mode": "normal",
+                                    "text": "abcd",
+                                    "type": "text",
+                                    "style": "",
+                                    "detail": 0,
+                                    "format": 0,
+                                    "version": 1
+                                }
+                            ],
+                            "direction": "ltr",
+                            "textStyle": "",
+                            "textFormat": 0
+                        }
+                    ],
+                    "direction": "ltr"
+                }
+            },
+            "blockName": "",
+            "blockType": "message"
+        }
+    ],
+    "submitButtonLabel": "Submit Response",
+    "confirmationType": "redirect",
+    "confirmationMessage": null,
+    "redirect": {
+        "url": "/"
+    },
+    "updatedAt": "2025-05-26T13:26:42.055Z",
+    "createdAt": "2025-05-26T12:25:41.755Z",
+    "emails": []
+}
 
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
 
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
